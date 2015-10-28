@@ -38,7 +38,6 @@ class PgHandler(object):
         print "Records:"
         pprint.pprint(results)
 
-
 if __name__ == '__main__':
     db = PgHandler()
 
