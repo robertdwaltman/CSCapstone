@@ -29,12 +29,13 @@ class NCurses(object):
 
     def menu_cycle(self, menu_listing, index):
         self.clear_screen()
-        ypos = 10
+        ypos = int(self.win_height)/2 - 5
+        xpos = int(self.win_width)/2  - 20
         for i, item in enumerate(menu_listing):
             if i == index:
-                self.stdscr.addstr(ypos, 25, item, curses.A_STANDOUT )
+                self.stdscr.addstr(ypos, xpos, item, curses.A_STANDOUT )
             else:
-                self.stdscr.addstr(ypos, 25, item)
+                self.stdscr.addstr(ypos, xpos, item)
             ypos += 2
         self.stdscr.refresh()
 
