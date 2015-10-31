@@ -1,5 +1,11 @@
 import curses
+import sys
+import os.path
 
+
+module_path = os.path.abspath(os.path.join(sys.path[0], os.pardir))
+sys.path.append(module_path)
+from pgdb.pgdb import PgHandler
 
 class NCurses(object):
     """docstring for NCurses"""
@@ -10,11 +16,14 @@ class NCurses(object):
         curses.noecho()
         self.win_height, self.win_width = self.stdscr.getmaxyx()
 
+        # DB handler
+        self.db = PgHandler()
+
         # create border and add string
         self.stdscr.border(0)
         self.queryBox = curses.newwin(10, 50, 12, 0)
         self.queryBox.border(0)
-        self.stdscr.addstr(11, 25, "cs419 - Group 5", curses.A_STANDOUT)
+        #self.stdscr.addstr(11, 25, "cs419 - Group 5", curses.A_STANDOUT)
 
 
         # Wait for user input and then quit
@@ -70,26 +79,31 @@ class NCurses(object):
 
     def print_table_names(self):
         self.clear_screen()
-        temp_table_names = ["Table 1", "Table 2", "Table 3"]
+        db_table_results = self.db.list_tables()
+        table_names = []
+        for item in db_table_results:
+            table_names.append(item[0])
+
+
         continue_loop = True
         counter = 0
-        self.menu_cycle(temp_table_names, 0)
+        self.menu_cycle(table_names, 0)
         while continue_loop:
             b = self.stdscr.getch()
             if b == curses.KEY_DOWN:
-                if counter >= len(temp_table_names)-1:
+                if counter >= len(table_names)-1:
                     counter = 0
                 else:
                     counter += 1
-                self.menu_cycle(temp_table_names, counter)
+                self.menu_cycle(table_names, counter)
             elif b == curses.KEY_UP:
                 if counter <= 0:
-                    counter = len(temp_table_names) -1
+                    counter = len(table_names) -1
                 else:
                     counter -= 1
-                self.menu_cycle(temp_table_names, counter)
+                self.menu_cycle(table_names, counter)
             elif b == curses.KEY_RIGHT or b == curses.KEY_ENTER:
-                self.print_table_contents(10, temp_table_names[counter])
+                self.print_table_contents(10, table_names[counter])
                 continue_loop = False
             elif b == curses.KEY_LEFT:
                 continue_loop = False
@@ -140,4 +154,5 @@ class NCurses(object):
         pass
 
 if __name__ == '__main__':
+    #print os.path.dirname()
     cur = NCurses()

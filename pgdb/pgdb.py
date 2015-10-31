@@ -20,8 +20,14 @@ class PgHandler(object):
     def drop_table(self):
         sql_str = "DROP TABLE names"
 
-    def create_table(self):
-        sql_str = "CREATE TABLE names (id SERIAL PRIMARY KEY, first TEXT, last TEXT)"
+    def list_tables(self):
+        sql_str = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' \
+        AND table_type='BASE TABLE';"
+        self.cursor.execute(sql_str)
+        results = self.cursor.fetchall()
+        return results
+    def create_table(self, table_name):
+        sql_str = "CREATE TABLE %s (id SERIAL PRIMARY KEY, first TEXT, last TEXT)" %(table_name)
         self.cursor.execute(sql_str)
         self.conn.commit()
 
@@ -43,5 +49,6 @@ if __name__ == '__main__':
 
     # db.dropTable()
     # db.createTable()
-    db.insert()
-    db.select()
+    #db.insert()
+    #db.select()
+    print db.list_tables()
