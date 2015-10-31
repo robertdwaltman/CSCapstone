@@ -12,30 +12,33 @@ class NCurses(object):
     def __init__(self):
         # Create a curses object
         self.stdscr = curses.initscr()
-        self.stdscr.keypad(1)
+        self.stdscr.border(0)
+
+        # Turn off keyboard echos
         curses.noecho()
+
+        #Turn on arrow keys
+        self.stdscr.keypad(1)
+
+        # Get height and width of window
         self.win_height, self.win_width = self.stdscr.getmaxyx()
 
         # DB handler
         self.db = PgHandler()
 
-        # create border and add string
-        self.stdscr.border(0)
-        self.queryBox = curses.newwin(10, 50, 12, 0)
-        self.queryBox.border(0)
-        #self.stdscr.addstr(11, 25, "cs419 - Group 5", curses.A_STANDOUT)
-
-
-        # Wait for user input and then quit
+        # Print main menu
         self.print_main_menu()
         #self.stdscr.getch()
         curses.endwin()
 
+    # This function clears the screen and rebuilds the border
     def clear_screen(self):
         self.stdscr.clear()
         self.stdscr.border(0)
         self.stdscr.refresh()
 
+    # This function builds the menu and spaces it out evenly
+    # and highlights the first option in the list
     def menu_cycle(self, menu_listing, index):
         self.clear_screen()
         ypos = int(self.win_height)/2 - 5
@@ -53,27 +56,37 @@ class NCurses(object):
         continue_loop = True
         counter = 0
         options = ["List Table Contents", "Submit SQL Query"]
+
+        # Print menu
         self.menu_cycle(options, 0)
+
+        # Listen for keyboard input. Quit when ESC key is hit
         while continue_loop:
             b = self.stdscr.getch()
+
+            # If a down arrow is entered, highlight the next option in the list (or go to top if at the end of list)
             if b == curses.KEY_DOWN:
                 if counter >= len(options)-1:
                     counter = 0
                 else:
                     counter += 1
                 self.menu_cycle(options, counter)
+            # If up arrow is entered, highlight the previous option (or go to the end if at top)
             elif b == curses.KEY_UP:
                 if counter <= 0:
                     counter = len(options) - 1
                 else:
                     counter -= 1
                 self.menu_cycle(options, counter)
+
+            # Right arrow key or enter goes to the next menu
             elif b == curses.KEY_RIGHT or b == curses.KEY_ENTER:
                 if counter == 0:
                     self.print_table_names()
                 elif counter == 1:
                     self.get_user_query()
                 continue_loop = False
+            # ESC ascii code is 27. Quit the loop if this is entered
             elif b == 27:
                 continue_loop = False
 
