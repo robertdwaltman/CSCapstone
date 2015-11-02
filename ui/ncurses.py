@@ -126,8 +126,11 @@ class NCurses(object):
 
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
-        temp_string = "Place holder for printing %s results for table %s" %(str(results_per_page),table_name)
-        self.stdscr.addstr(10,15, temp_string)
+        self.stdscr.addstr((3),(15), "%s" % table_name, curses.A_BOLD | curses.A_UNDERLINE)
+        for x in range(0,results_per_page):
+            #temp_string = "Place holder for printing %s results for table %s" %(str(results_per_page),table_name)
+            temp_string = "%s table item %d" %(table_name,(x+1))
+            self.stdscr.addstr((x + 5),(15), temp_string)
         continue_loop = True
         while continue_loop:
             b = self.stdscr.getch()
