@@ -10,7 +10,7 @@ if __name__ == '__main__':
     # Create DB interface
     db = PgHandler()
 
-    db.create_table("places")
-    db.create_table("things")
+    #db.create_table("places")
+    #db.create_table("things")
     #db.insert()
     #db.select()
