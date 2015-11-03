@@ -128,7 +128,6 @@ class NCurses(object):
         self.clear_screen()
         self.stdscr.addstr((3),(15), "%s" % table_name, curses.A_BOLD | curses.A_UNDERLINE)
         for x in range(0,results_per_page):
-            #temp_string = "Place holder for printing %s results for table %s" %(str(results_per_page),table_name)
             temp_string = "%s table item %d" %(table_name,(x+1))
             self.stdscr.addstr((x + 5),(15), temp_string)
         continue_loop = True
@@ -141,6 +140,26 @@ class NCurses(object):
                 continue_loop = False
                 curses.endwin()
 
+    #def print_table_contents(self, results_per_page, table_name):
+    #    self.clear_screen()
+    #    curses.echo()
+    #    self.tableBox = curses.newwin(15, 50, 4, 10)
+    #    self.tableBox.border(0)
+    #    title_string = "%s" %(table_name)
+    #    self.tableBox.addstr((1),(5), title_string, curses.A_BOLD | curses.A_UNDERLINE)
+    #    for x in range(0,results_per_page):
+    #        #temp_string = "Place holder for printing %s results for table %s" %(str(results_per_page),table_name)
+    #        temp_string = "%s table item %d" %(table_name,(x+1))
+    #        self.tableBox.addstr((x+3),(5), temp_string)
+    #    continue_loop = True
+    #    while continue_loop:
+    #        b = self.tableBox.getch()
+    #        if b == curses.KEY_LEFT:
+    #            continue_loop = False
+    #            self.print_table_names()
+    #        elif b == 27:
+    #            continue_loop = False
+    #            curses.endwin()
 
     def drop_table_menu(self):
         self.clear_screen()
