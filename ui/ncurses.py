@@ -129,11 +129,15 @@ class NCurses(object):
 
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
-        self.stdscr.addstr((3),(30), "%s" % table_name, curses.A_BOLD | curses.A_UNDERLINE)
+        self.tableBox = curses.newwin(15, 19, 4, 30)
+        self.tableBox.border(0)
+        title_string = "%s" %(table_name)
+        self.tableBox.addstr((1),(3), title_string, curses.A_BOLD | curses.A_UNDERLINE)
         for x in range(0,results_per_page):
             temp_string = "%s #%d placeholder" %(table_name,(x+1))
             temp_string = temp_string[:10] + '...'
-            self.stdscr.addstr((x + 5),(30), temp_string)
+            self.tableBox.addstr((x+3),(3), temp_string)
+            self.tableBox.refresh()
         continue_loop = True
         while continue_loop:
             b = self.stdscr.getch()
@@ -143,26 +147,6 @@ class NCurses(object):
             elif b == 27:
                 continue_loop = False
                 curses.endwin()
-
-    #def print_table_contents(self, results_per_page, table_name):
-    #    self.clear_screen()
-    #    self.tableBox = curses.newwin(15, 19, 4, 30)
-    #    self.tableBox.border(0)
-    #    title_string = "%s" %(table_name)
-    #    self.tableBox.addstr((1),(3), title_string, curses.A_BOLD | curses.A_UNDERLINE)
-    #    for x in range(0,results_per_page):
-    #        temp_string = "%s #%d placeholder" %(table_name,(x+1))
-    #        temp_string = temp_string[:10] + '...'
-    #        self.tableBox.addstr((x+3),(3), temp_string)
-    #    continue_loop = True
-    #    while continue_loop:
-    #        b = self.tableBox.getch()
-    #        if b == curses.KEY_LEFT:
-    #            continue_loop = False
-    #            self.print_table_names()
-    #        elif b == 27:
-    #            continue_loop = False
-    #            curses.endwin()
 
     def drop_table_menu(self):
         self.clear_screen()
