@@ -17,6 +17,9 @@ class NCurses(object):
         # Turn off keyboard echos
         curses.noecho()
 
+	# Hide Cursor
+	curses.curs_set(0)
+
         #Turn on arrow keys
         self.stdscr.keypad(1)
 
@@ -168,6 +171,7 @@ class NCurses(object):
     def get_user_query(self):
         self.clear_screen()
         curses.echo()
+	curses.curs_set(1)
         self.queryBox = curses.newwin(10, 50, 12, 0)
         self.queryBox.border(0)
         self.stdscr.addstr(11, 25, "cs419 - Group 5", curses.A_STANDOUT)
