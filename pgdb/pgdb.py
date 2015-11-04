@@ -50,18 +50,23 @@ class PgHandler(object):
     def get_recent_query(self):
         return self.latest_query
 
-    def nxt(self):
-        self.current_index += self.results_per_page
-        if self.current_index >= len(self.test):
+    def get_next_results(self):
+        if self.latest_results:
+            self.current_index += self.results_per_page
+            if self.current_index >= len(self.test):
+                self.current_index -= self.results_per_page
+            return self.latest_results[self.current_index:self.current_index+self.results_per_page]
+        else:
+            return []
+
+    def get_prev_results(self):
+        if self.latest_results:
             self.current_index -= self.results_per_page
-
-        print self.current_index
-
-    def prev(self):
-        self.current_index -= self.results_per_page
-        if self.current_index <0:
-            self.current_index = 0
-        print self.current_index
+            if self.current_index <0:
+                self.current_index = 0
+            return self.latest_results[self.current_index:self.current_index+self.results_per_page]
+        else:
+            return []
 
     def list_tables(self):
         sql_str = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' \
@@ -92,32 +97,3 @@ class PgHandler(object):
 if __name__ == '__main__':
     import sys
     db = PgHandler()
-
-    while 1:
-        c = sys.stdin.read(1)
-        if c == '.':
-            db.nxt()
-        elif c == ',':
-            #pass
-            db.prev()
-    # db.dropTable()
-    # db.createTable()
-    #db.insert()
-    #db.select()
-    # print db.get_next_results()
-    # print db.get_next_results()
-
-    # db.prev()
-    # db.prev()
-    #
-    # db.nxt()
-    # db.nxt()
-    #
-    # db.nxt()
-    # db.prev()
-    # print "Previous 5"
-    # db.get_prev_results()
-    # print "Next 5"
-    # db.get_next_results()
-    # print "Previous 5"
-    # db.get_prev_results()
