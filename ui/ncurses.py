@@ -196,9 +196,11 @@ class NCurses(object):
         self.queryBox.addstr(1, 5, "Enter your query below:")
         self.stdscr.refresh()
         inputString = self.queryBox.getstr(3, 25)
-        self.queryBox.addstr(5, 5, "You entered: %s" % inputString)
-        self.queryBox.addstr(6, 5, "(Press any key to exit UI)")
-        self.queryBox.refresh()
+        status = self.db.run_query(inputString)
+        if status:
+            self.queryBox.addstr(5, 5, "Status is: %s" % status)
+            self.queryBox.addstr(6, 5, "(Press any key to exit UI)")
+            self.queryBox.refresh()
 
         # Wait for user input and then quit
         self.stdscr.getch()
@@ -207,7 +209,7 @@ class NCurses(object):
     def query_db(self):
         pass
 
-    def print_sql_results(self, results_per_page):
+    def print_sql_results(self, results):
         pass
 
 if __name__ == '__main__':
