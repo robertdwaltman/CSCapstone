@@ -127,17 +127,52 @@ class NCurses(object):
             elif b == 27:
                 continue_loop = False
 
+    #def print_table_contents(self, results_per_page, table_name):
+    #    self.clear_screen()
+    #    self.tableBox = curses.newwin(14, 19, 4, 30)
+    #    self.tableBox.border(0)
+    #    title_string = "%s" %(table_name)
+    #    self.stdscr.addstr((2),(30), title_string, curses.A_BOLD | curses.A_UNDERLINE)
+    #    self.tableBox.refresh()
+    #    self.stdscr.refresh()
+    #    for x in range(0,results_per_page):
+    #        temp_string = "%s #%d placeholder" %(table_name,(x+1))
+    #        temp_string = temp_string[:10] + '...'
+    #        self.tableBox.addstr((x+2),(3), temp_string)
+    #        self.tableBox.refresh()
+    #        self.stdscr.refresh()
+    #    continue_loop = True
+    #    while continue_loop:
+    #        b = self.stdscr.getch()
+    #        if b == curses.KEY_LEFT:
+    #            continue_loop = False
+    #            self.print_table_names()
+    #        elif b == 27:
+    #            continue_loop = False
+    #            curses.endwin()
+				
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
-        self.tableBox = curses.newwin(15, 19, 4, 30)
+        self.tableBox = curses.newwin(15, 50, 4, 15)
         self.tableBox.border(0)
         title_string = "%s" %(table_name)
-        self.tableBox.addstr((1),(3), title_string, curses.A_BOLD | curses.A_UNDERLINE)
-        for x in range(0,results_per_page):
-            temp_string = "%s #%d placeholder" %(table_name,(x+1))
-            temp_string = temp_string[:10] + '...'
-            self.tableBox.addstr((x+3),(3), temp_string)
+        self.stdscr.addstr((2),(15), title_string, curses.A_BOLD | curses.A_UNDERLINE)
+        self.tableBox.refresh()
+        self.stdscr.refresh()
+        #table_data = [['Jon', 'Ashok', 'Robert'], ['Derderian', 'Nayar', 'Waltman'], ['CS 419', 'CS 419', 'CS 419'], ['Final', 'Final', 'Final']]
+        #table_data = [['Jon', 'Ashok', 'Robert'], ['Derderian', 'Nayar', 'Waltman']]
+        table_data = ['Jon', 'Ashok', 'Robert']
+        #based on first solution from link, http://stackoverflow.com/questions/9989334/create-nice-column-output-in-python
+        col_width = max(len(word) for row in table_data for word in row) + 2  # padding
+        #x = 1
+        y = 1
+        for row in table_data:
+            #temp_string = "".join(word.ljust(col_width) for word in row)
+            self.tableBox.addstr(y, 2, "".join(word.ljust(col_width) for word in row))
+            #x += 1
+            y += 1
             self.tableBox.refresh()
+            self.stdscr.refresh()
         continue_loop = True
         while continue_loop:
             b = self.stdscr.getch()
