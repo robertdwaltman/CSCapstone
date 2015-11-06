@@ -50,6 +50,9 @@ class PgHandler(object):
     def get_recent_query(self):
         return self.latest_query
 
+    def get_all_results(self):
+        return self.latest_results
+
     def get_next_results(self):
         if self.latest_results:
             self.current_index += self.results_per_page
