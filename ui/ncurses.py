@@ -82,7 +82,7 @@ class NCurses(object):
                 self.menu_cycle(options, counter)
 
             # Right arrow key or enter goes to the next menu
-            elif b == curses.KEY_RIGHT or b == curses.KEY_ENTER:
+            elif b == curses.KEY_RIGHT or b == 10:
                 if counter == 0:
                     self.print_table_names()
                 elif counter == 1:
@@ -117,7 +117,7 @@ class NCurses(object):
                 else:
                     counter -= 1
                 self.menu_cycle(table_names, counter)
-            elif b == curses.KEY_RIGHT or b == curses.KEY_ENTER:
+            elif b == curses.KEY_RIGHT or b == 10:
                 self.print_table_contents(10, table_names[counter])
                 continue_loop = False
             elif b == curses.KEY_LEFT:
@@ -164,10 +164,8 @@ class NCurses(object):
         inputString = self.queryBox.getstr(3, 25)
         status = self.db.run_query(inputString)
         if status:
-            self.queryBox.addstr(5, 5, "Status is: %s" % status)
-            self.queryBox.addstr(6, 5, "(Press any key to exit UI)")
-            self.queryBox.refresh()
-
+            results = self.db.get_next_results()
+            self.print_sql_results(results)
         # Wait for user input and then quit
         self.stdscr.getch()
         #curses.endwin()
@@ -176,19 +174,22 @@ class NCurses(object):
         pass
 
     def print_sql_results(self, results):
+        self.clear_screen()
+        self.resultsBox = curses.newwin(10, 50, 12, 0)
+        self.resultsBox.border(0)
         #based solutions from link, http://stackoverflow.com/questions/9989334/create-nice-column-output-in-python
-        col_width = max(len(word) for row in results for word in row) + 2  # padding
+        col_width = max(len(str(word)) for row in results for word in row) + 2  # padding
         x = 1
         for row in results:
-            if type(row) is list:
-                temp_string = "".join(word.ljust(col_width) for word in row)
-                self.tableBox.addstr(x, 2, "".join(word.ljust(col_width) for word in row))
+            if type(row) is tuple:
+                temp_string = "".join(str(word).ljust(col_width) for word in row)
+                self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in row))
             else:
-                col_width = max(len(word) for word in results) +2
-                temp_string = "".join(word.ljust(col_width) for word in results)
-                self.tableBox.addstr(x, 2, "".join(word.ljust(col_width) for word in results))
+                col_width = max(len(str(word)) for word in results) +2
+                temp_string = "".join(str(word).ljust(col_width) for word in results)
+                self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in results))
             x += 1
-            self.tableBox.refresh()
+            self.resultsBox.refresh()
             self.stdscr.refresh()
             #print temp_string
 
