@@ -125,8 +125,8 @@ class NCurses(object):
                 self.print_main_menu()
             elif b == 27:
                 continue_loop = False
+                curses.endwin()
 
-				
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
         self.tableBox = curses.newwin(15, 50, 4, 15)
@@ -136,7 +136,7 @@ class NCurses(object):
         self.tableBox.refresh()
         self.stdscr.refresh()
         table_data = [['Jon', 'Derderian', 'CS 419', '1'], ['Ashok', 'Nayar', 'CS 419', '2'], ['Robert', 'Waltman', 'CS 419', '3']]
-        #table_data = ['Jon', 'Derderian', 'CS 419', '1']
+        table_data = ['Jon', 'Derderian', 'CS 419', '1']
         self.print_sql_results(table_data)
         continue_loop = True
         while continue_loop:
@@ -180,11 +180,17 @@ class NCurses(object):
         col_width = max(len(word) for row in results for word in row) + 2  # padding
         x = 1
         for row in results:
-            #temp_string = "".join(word.ljust(col_width) for word in row)
-            self.tableBox.addstr(x, 2, "".join(word.ljust(col_width) for word in row))
+            if type(row) is list:
+                temp_string = "".join(word.ljust(col_width) for word in row)
+                self.tableBox.addstr(x, 2, "".join(word.ljust(col_width) for word in row))
+            else:
+                col_width = max(len(word) for word in results) +2
+                temp_string = "".join(word.ljust(col_width) for word in results)
+                self.tableBox.addstr(x, 2, "".join(word.ljust(col_width) for word in results))
             x += 1
             self.tableBox.refresh()
             self.stdscr.refresh()
+            #print temp_string
 
 if __name__ == '__main__':
     #print os.path.dirname()
