@@ -71,6 +71,13 @@ class PgHandler(object):
         else:
             return []
 
+    def get_table_results(self, table_name):
+        sql_str = "SELECT * FROM %s" %(table_name)
+        self.cursor.execute(sql_str)
+        self.latest_results = self.cursor.fetchall()
+        print self.cursor.rowcount
+
+
     def list_tables(self):
         sql_str = "SELECT table_name FROM information_schema.tables WHERE table_schema='public' \
         AND table_type='BASE TABLE';"
@@ -85,8 +92,9 @@ class PgHandler(object):
 
     def insert(self):
         sql_str = "INSERT INTO names (first,last) VALUES('test','name')"
-        self.cursor.execute(sql_str)
-        self.conn.commit()
+        print  self.cursor.execute(sql_str)
+        print self.conn.commit()
+        print self.cursor.rowcount
         print "Inserted new record"
 
     def select(self):
@@ -100,3 +108,5 @@ class PgHandler(object):
 if __name__ == '__main__':
     import sys
     db = PgHandler()
+    db.get_table_results('names')
+    #db.insert()

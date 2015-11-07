@@ -135,8 +135,10 @@ class NCurses(object):
         self.stdscr.addstr((2),(15), title_string, curses.A_BOLD | curses.A_UNDERLINE)
         self.tableBox.refresh()
         self.stdscr.refresh()
-        table_data = [['Jon', 'Derderian', 'CS 419', '1'], ['Ashok', 'Nayar', 'CS 419', '2'], ['Robert', 'Waltman', 'CS 419', '3']]
-        table_data = ['Jon', 'Derderian', 'CS 419', '1']
+        #table_data = [['Jon', 'Derderian', 'CS 419', '1'], ['Ashok', 'Nayar', 'CS 419', '2'], ['Robert', 'Waltman', 'CS 419', '3']]
+        #table_data = ['Jon', 'Derderian', 'CS 419', '1']
+        self.db.get_table_results(table_name)
+        table_data = self.db.get_next_results()
         self.print_sql_results(table_data)
         continue_loop = True
         while continue_loop:
@@ -196,3 +198,4 @@ class NCurses(object):
 if __name__ == '__main__':
     #print os.path.dirname()
     cur = NCurses()
+
