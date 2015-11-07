@@ -45,10 +45,17 @@ class PgHandler(object):
         pass
 
     def get_error(self):
-        return self.latest_error
+        return str(self.latest_error)
 
     def get_recent_query(self):
         return self.latest_query
+
+    def get_returned_columns(self):
+        if self.cursor.description:
+            colnames = [desc[0] for desc in self.cursor.description]
+            return tuple(colnames)
+        else:
+            return ()
 
     def get_all_results(self):
         return self.latest_results
@@ -75,7 +82,7 @@ class PgHandler(object):
         sql_str = "SELECT * FROM %s" %(table_name)
         self.cursor.execute(sql_str)
         self.latest_results = self.cursor.fetchall()
-        print self.cursor.rowcount
+        #print self.cursor.rowcount
 
 
     def list_tables(self):
@@ -108,5 +115,9 @@ class PgHandler(object):
 if __name__ == '__main__':
     import sys
     db = PgHandler()
-    db.get_table_results('names')
+    #db.get_table_results('places')
+    #print db.get_next_results()
+    #db.run_query("SELECT * FROM film")
+    print db.get_returned_columns()
+
     #db.insert()

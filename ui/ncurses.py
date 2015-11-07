@@ -53,12 +53,17 @@ class NCurses(object):
             ypos += 2
         self.stdscr.refresh()
 
+    def print_intro(self):
+        
     def print_main_menu(self):
         self.clear_screen()
         continue_loop = True
         counter = 0
         options = ["List Table Contents", "Submit SQL Query"]
-
+        self.groupIdBox = curses.newwin(20, 5, 1, 1)
+        self.groupIdBox.border(0)
+        self.groupIdBox.refresh()
+        self.stdscr.refresh()
         # Print menu
         self.menu_cycle(options, 0)
 
@@ -91,6 +96,7 @@ class NCurses(object):
             # ESC ascii code is 27. Quit the loop if this is entered
             elif b == 27:
                 continue_loop = False
+            self.groupIdBox.refresh()
 
     def print_table_names(self):
         self.clear_screen()
@@ -129,11 +135,11 @@ class NCurses(object):
 
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
-        self.tableBox = curses.newwin(15, 50, 4, 15)
-        self.tableBox.border(0)
+        #self.tableBox = curses.newwin(15, 50, 4, 15)
+        #self.tableBox.border(0)
         title_string = "%s" %(table_name)
         self.stdscr.addstr((2),(15), title_string, curses.A_BOLD | curses.A_UNDERLINE)
-        self.tableBox.refresh()
+        #self.tableBox.refresh()
         self.stdscr.refresh()
         #table_data = [['Jon', 'Derderian', 'CS 419', '1'], ['Ashok', 'Nayar', 'CS 419', '2'], ['Robert', 'Waltman', 'CS 419', '3']]
         #table_data = ['Jon', 'Derderian', 'CS 419', '1']
@@ -158,9 +164,11 @@ class NCurses(object):
         self.clear_screen()
         curses.echo()
         curses.curs_set(1)
-        self.queryBox = curses.newwin(10, 50, 12, 0)
+
+        #self.stdscr.addstr(11, 25, "cs419 - Group 5", curses.A_STANDOUT)
+        self.queryBox = curses.newwin(self.win_height/4, self.win_width-2,(self.win_height - self.win_height/4)-1,1 )
         self.queryBox.border(0)
-        self.stdscr.addstr(11, 25, "cs419 - Group 5", curses.A_STANDOUT)
+
         self.queryBox.addstr(1, 5, "Enter your query below:")
         self.stdscr.refresh()
         inputString = self.queryBox.getstr(3, 25)
@@ -168,6 +176,10 @@ class NCurses(object):
         if status:
             results = self.db.get_next_results()
             self.print_sql_results(results)
+        else:
+            error = []
+            error.append("There was a problem with your query: "+ self.db.get_error())
+            self.print_sql_results(error)
         # Wait for user input and then quit
         self.stdscr.getch()
         #curses.endwin()
@@ -177,23 +189,32 @@ class NCurses(object):
 
     def print_sql_results(self, results):
         self.clear_screen()
-        self.resultsBox = curses.newwin(10, 50, 12, 0)
+        curses.curs_set(0)
+
+        self.resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
         self.resultsBox.border(0)
+        column_names = self.db.get_returned_columns()
+        if column_names:
+            results.insert(0,column_names)
         #based solutions from link, http://stackoverflow.com/questions/9989334/create-nice-column-output-in-python
-        col_width = max(len(str(word)) for row in results for word in row) + 2  # padding
-        x = 1
-        for row in results:
-            if type(row) is tuple:
-                temp_string = "".join(str(word).ljust(col_width) for word in row)
-                self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in row))
-            else:
-                col_width = max(len(str(word)) for word in results) +2
-                temp_string = "".join(str(word).ljust(col_width) for word in results)
-                self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in results))
-            x += 1
+        if results:
+            col_width = max(len(str(word)) for row in results for word in row) + 2  # padding
+            x = 1
+            for row in results:
+                if type(row) is tuple:
+                    temp_string = "".join(str(word).ljust(col_width) for word in row)
+                    self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in row))
+                else:
+                    col_width = max(len(str(word)) for word in results) +2
+                    temp_string = "".join(str(word).ljust(col_width) for word in results)
+                    self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in results))
+                x += 1
+                self.resultsBox.refresh()
+                self.stdscr.refresh()
+        else:
+            self.resultsBox.addstr(1, 10, "This query contains no results")
             self.resultsBox.refresh()
             self.stdscr.refresh()
-            #print temp_string
 
 if __name__ == '__main__':
     #print os.path.dirname()
