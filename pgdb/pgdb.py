@@ -30,6 +30,7 @@ class PgHandler(object):
         sql_str = "DROP TABLE names"
 
     def run_query(self, query):
+        self.current_index = self.results_per_page * -1
         self.latest_query = query
         try:
             self.cursor.execute(self.latest_query)
@@ -83,6 +84,7 @@ class PgHandler(object):
             return []
 
     def get_table_results(self, table_name):
+        self.current_index = self.results_per_page * -1
         sql_str = "SELECT * FROM %s" %(table_name)
         self.cursor.execute(sql_str)
         self.latest_results = self.cursor.fetchall()
@@ -119,5 +121,10 @@ class PgHandler(object):
 if __name__ == '__main__':
     import sys
     db = PgHandler()
+    db.get_table_results('names')
+    print db.get_next_results()
+
+    db.get_table_results('names')
+    print db.get_next_results()
 
     #db.insert()

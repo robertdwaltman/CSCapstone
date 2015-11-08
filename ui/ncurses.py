@@ -174,11 +174,12 @@ class NCurses(object):
         while continue_loop:
             b = self.stdscr.getch()
             if b == curses.KEY_LEFT:
-                continue_loop = False
-                self.print_table_names()
+                self.print_sql_results(self.db.get_prev_results())
+            elif b == curses.KEY_RIGHT:
+                self.print_sql_results(self.db.get_next_results())
             elif b == 27:
                 continue_loop = False
-                curses.endwin()
+                self.print_table_names()
 
     def drop_table_menu(self):
         self.clear_screen()
