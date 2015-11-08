@@ -205,7 +205,16 @@ class NCurses(object):
             error.append("There was a problem with your query: "+ self.db.get_error())
             self.print_sql_results(error)
         # Wait for user input and then quit
-        self.stdscr.getch()
+        continue_loop = True
+        while continue_loop:
+            b = self.stdscr.getch()
+            if b == curses.KEY_RIGHT:
+                self.print_sql_results(self.db.get_next_results())
+            elif b == curses.KEY_LEFT:
+                self.print_sql_results(self.db.get_prev_results())
+            elif b == 27:
+                self.get_user_query()
+                continue_loop = False
         #curses.endwin()
 
     def query_db(self):

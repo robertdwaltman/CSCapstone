@@ -29,14 +29,17 @@ class PgHandler(object):
     def drop_table(self):
         sql_str = "DROP TABLE names"
 
-    def run_query(self,query):
+    def run_query(self, query):
         self.latest_query = query
         try:
             self.cursor.execute(self.latest_query)
         except Exception as e:
             self.latest_error =  e
+            self.conn.rollback()
             return False
         self.current_index = 0
+        #print self.cursor.fetchone()
+
         self.latest_results = self.cursor.fetchall()
         return True
 
@@ -61,9 +64,10 @@ class PgHandler(object):
         return self.latest_results
 
     def get_next_results(self):
+
         if self.latest_results:
             self.current_index += self.results_per_page
-            if self.current_index >= len(self.test):
+            if self.current_index >= len(self.latest_results):
                 self.current_index -= self.results_per_page
             return self.latest_results[self.current_index:self.current_index+self.results_per_page]
         else:
@@ -115,9 +119,4 @@ class PgHandler(object):
 if __name__ == '__main__':
     import sys
     db = PgHandler()
-    #db.get_table_results('places')
-    #print db.get_next_results()
-    #db.run_query("SELECT * FROM film")
-    print db.get_returned_columns()
-
-    #db.insert()
+    
