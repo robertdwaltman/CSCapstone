@@ -29,7 +29,8 @@ class NCurses(object):
         self.db = PgHandler()
 
         # Print main menu
-        self.print_main_menu()
+        self.print_intro()
+        #self.print_main_menu()
         #self.stdscr.getch()
         curses.endwin()
 
@@ -54,7 +55,30 @@ class NCurses(object):
         self.stdscr.refresh()
 
     def print_intro(self):
-        
+        self.clear_screen()
+        height = self.win_height/2
+        width = self.win_width/2
+        introBox = curses.newwin(15, 50, height-6, width-25)
+        introBox.border(0)
+        introBox.addstr(1, 14, "cs419 - Group 5", curses.A_BOLD | curses.A_UNDERLINE)
+        introBox.addstr(4, 14, "Jon Derderian")
+        introBox.addstr(5, 14, "Ashok Nayar")
+        introBox.addstr(6, 14, "Robert Waltman")
+        introBox.addstr(8, 4, "Press enter to continue or escape to quit.", curses.A_STANDOUT)
+
+        introBox.refresh()
+        continue_loop = True
+        while continue_loop:
+            b = self.stdscr.getch()
+            if b == curses.KEY_RIGHT or b == 10:
+                continue_loop = False
+                self.print_main_menu()
+            elif b == 27:
+                continue_loop = False
+                curses.endwin()
+
+
+
     def print_main_menu(self):
         self.clear_screen()
         continue_loop = True
