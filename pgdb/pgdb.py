@@ -39,7 +39,7 @@ class PgHandler(object):
             return False
         self.current_index = 0
         #print self.cursor.fetchone()
-
+        self.conn.commit()
         self.latest_results = self.cursor.fetchall()
         return True
 
@@ -119,4 +119,5 @@ class PgHandler(object):
 if __name__ == '__main__':
     import sys
     db = PgHandler()
-    
+
+    #db.insert()
