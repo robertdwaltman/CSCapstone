@@ -35,13 +35,18 @@ class PgHandler(object):
         try:
             self.cursor.execute(self.latest_query)
         except Exception as e:
-            self.latest_error =  e
+            self.latest_error = e
             self.conn.rollback()
             return False
-        self.current_index = 0
-        #print self.cursor.fetchone()
+
         self.conn.commit()
-        self.latest_results = self.cursor.fetchall()
+        try:
+            rowcount =  self.cursor.rowcount
+            self.latest_results = self.cursor.fetchall()
+        except Exception as e:
+            self.conn.rollback()
+            if rowcount > 0:
+                self.latest_results = [(str(rowcount)+" rows were affected.")]
         return True
 
 
@@ -49,7 +54,7 @@ class PgHandler(object):
         pass
 
     def get_error(self):
-        return str(self.latest_error)
+        return str(self.latest_error).replace('\n','\n     ')
 
     def get_recent_query(self):
         return self.latest_query
@@ -77,7 +82,7 @@ class PgHandler(object):
     def get_prev_results(self):
         if self.latest_results:
             self.current_index -= self.results_per_page
-            if self.current_index <0:
+            if self.current_index < 0:
                 self.current_index = 0
             return self.latest_results[self.current_index:self.current_index+self.results_per_page]
         else:
@@ -121,10 +126,9 @@ class PgHandler(object):
 if __name__ == '__main__':
     import sys
     db = PgHandler()
-    db.get_table_results('names')
-    print db.get_next_results()
-
-    db.get_table_results('names')
-    print db.get_next_results()
-
+    #db.run_query("INSERT INTO names (first, last) VALUES ('a','b')")
+    db.run_query("SELECT * adfadsfFROM names")
+    print db.get_error()
+    #print db.get_next_results()
+    #print db.get_all_results()
     #db.insert()

@@ -190,29 +190,37 @@ class NCurses(object):
         curses.echo()
         curses.curs_set(1)
 
-        #self.stdscr.addstr(11, 25, "cs419 - Group 5", curses.A_STANDOUT)
+        errors = False
         self.queryBox = curses.newwin(self.win_height/4, self.win_width-2,(self.win_height - self.win_height/4)-1,1 )
         self.queryBox.border(0)
 
-        self.queryBox.addstr(1, 5, "Enter your query below:")
+        self.queryBox.addstr(1, 5, "Enter your query below. Enter 'q' by itself to go back to the previous screen:")
         self.stdscr.refresh()
         inputString = self.queryBox.getstr(3, 25)
+        if inputString == 'q':
+            curses.curs_set(0)
+            curses.noecho()
+            self.print_main_menu()
+            return
         status = self.db.run_query(inputString)
         if status:
             results = self.db.get_next_results()
             self.print_sql_results(results)
         else:
-            error = []
-            error.append("There was a problem with your query: "+ self.db.get_error())
-            self.print_sql_results(error)
+            errors = True
+            error_list = []
+            error_list.append("          There was a problem with your query: "+ self.db.get_error())
+            self.print_error(error_list)
         # Wait for user input and then quit
         continue_loop = True
         while continue_loop:
             b = self.stdscr.getch()
             if b == curses.KEY_RIGHT:
-                self.print_sql_results(self.db.get_next_results())
+                if not errors:
+                    self.print_sql_results(self.db.get_next_results())
             elif b == curses.KEY_LEFT:
-                self.print_sql_results(self.db.get_prev_results())
+                if not errors:
+                    self.print_sql_results(self.db.get_prev_results())
             elif b == 27:
                 self.get_user_query()
                 continue_loop = False
@@ -220,6 +228,27 @@ class NCurses(object):
 
     def query_db(self):
         pass
+
+    def print_error(self, errors):
+        self.clear_screen()
+        curses.curs_set(0)
+
+        resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
+        #resultsBox.border(0)
+        if errors:
+            col_width = max(len(str(word)) for row in errors for word in row) + 2  # padding
+            x = 1
+            for row in errors:
+                if type(row) is tuple:
+                    temp_string = "".join(str(word).ljust(col_width) for word in row)
+                    resultsBox.addstr(x, 10, "".join(str(word).ljust(col_width) for word in row))
+                else:
+                    col_width = max(len(str(word)) for word in errors) +2
+                    temp_string = "".join(str(word).ljust(col_width) for word in errors)
+                    resultsBox.addstr(x, 10, "".join(str(word).ljust(col_width) for word in errors))
+                x += 1
+                resultsBox.refresh()
+                self.stdscr.refresh()
 
     def print_sql_results(self, results):
         self.clear_screen()
@@ -250,7 +279,7 @@ class NCurses(object):
             self.resultsBox.refresh()
             self.stdscr.refresh()
 
+    def end_win(self):
+        curses.endwin()
 if __name__ == '__main__':
-    #print os.path.dirname()
     cur = NCurses()
-
