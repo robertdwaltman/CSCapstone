@@ -266,11 +266,11 @@ class NCurses(object):
             for row in results:
                 if type(row) is tuple:
                     temp_string = "".join(str(word).ljust(col_width) for word in row)
-                    self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in row))
+                    self.resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row))
                 else:
                     col_width = max(len(str(word)) for word in results) +2
                     temp_string = "".join(str(word).ljust(col_width) for word in results)
-                    self.resultsBox.addstr(x, 2, "".join(str(word).ljust(col_width) for word in results))
+                    self.resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results))
                 x += 1
                 self.resultsBox.refresh()
                 self.stdscr.refresh()
