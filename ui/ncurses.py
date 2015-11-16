@@ -159,24 +159,36 @@ class NCurses(object):
 
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
-        #self.tableBox = curses.newwin(15, 50, 4, 15)
-        #self.tableBox.border(0)
         title_string = "%s" %(table_name)
         self.stdscr.addstr((2),(15), title_string, curses.A_BOLD | curses.A_UNDERLINE)
-        #self.tableBox.refresh()
         self.stdscr.refresh()
-        #table_data = [['Jon', 'Derderian', 'CS 419', '1'], ['Ashok', 'Nayar', 'CS 419', '2'], ['Robert', 'Waltman', 'CS 419', '3']]
-        #table_data = ['Jon', 'Derderian', 'CS 419', '1']
+
         self.db.get_table_results(table_name)
-        table_data = self.db.get_next_results()
-        self.print_sql_results(table_data)
+        current_results = self.db.get_next_results()
+        self.print_sql_results(current_results, 0)
         continue_loop = True
+        selection_index = 0
         while continue_loop:
             b = self.stdscr.getch()
             if b == curses.KEY_LEFT:
-                self.print_sql_results(self.db.get_prev_results())
+                current_results = self.db.get_prev_results()
+                self.print_sql_results(current_results, 0)
             elif b == curses.KEY_RIGHT:
-                self.print_sql_results(self.db.get_next_results())
+                current_results = self.db.get_next_results()
+                self.print_sql_results(current_results, 0)
+            elif b == curses.KEY_UP:
+                if current_results:
+                    selection_index -=1
+                    if selection_index < 0:
+                        selection_index = len(current_results) - 1
+                    self.print_sql_results(current_results, selection_index)
+            elif b == curses.KEY_DOWN:
+                if current_results:
+                    selection_index +=  1
+                    if selection_index > len(current_results) - 1:
+                        selection_index = 0
+                    self.print_sql_results(current_results, selection_index)
+
             elif b == 27:
                 continue_loop = False
                 self.print_table_names()
@@ -189,7 +201,8 @@ class NCurses(object):
         self.clear_screen()
         curses.echo()
         curses.curs_set(1)
-
+        current_results = None
+        selection_index = 0
         errors = False
         self.queryBox = curses.newwin(self.win_height/4, self.win_width-2,(self.win_height - self.win_height/4)-1,1 )
         self.queryBox.border(0)
@@ -205,7 +218,7 @@ class NCurses(object):
         status = self.db.run_query(inputString)
         if status:
             results = self.db.get_next_results()
-            self.print_sql_results(results)
+            self.print_sql_results(results,0)
         else:
             errors = True
             error_list = []
@@ -217,10 +230,26 @@ class NCurses(object):
             b = self.stdscr.getch()
             if b == curses.KEY_RIGHT:
                 if not errors:
-                    self.print_sql_results(self.db.get_next_results())
+                    current_results = self.db.get_next_results()
+                    self.print_sql_results(current_results, 0)
             elif b == curses.KEY_LEFT:
                 if not errors:
-                    self.print_sql_results(self.db.get_prev_results())
+                    current_results = self.db.get_prev_results()
+                    self.print_sql_results(current_results, 0)
+            elif b == curses.KEY_UP:
+                if not errors:
+                    if current_results:
+                        selection_index -=1
+                        if selection_index < 0:
+                            selection_index = len(current_results) - 1
+                        self.print_sql_results(current_results, selection_index)
+            elif b == curses.KEY_DOWN:
+                if not errors:
+                    if current_results:
+                        selection_index +=1
+                        if selection_index > len(current_results) - 1:
+                            selection_index = 0
+                        self.print_sql_results(current_results, selection_index)
             elif b == 27:
                 self.get_user_query()
                 continue_loop = False
@@ -250,15 +279,15 @@ class NCurses(object):
                 resultsBox.refresh()
                 self.stdscr.refresh()
 
-    def print_sql_results(self, results):
+    def print_sql_results(self, returned_results, selection_index):
         self.clear_screen()
         curses.curs_set(0)
-
-        self.resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
-        self.resultsBox.border(0)
+        results = returned_results[:]
+        resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
+        resultsBox.border(0)
         column_names = self.db.get_returned_columns()
         if column_names:
-            results.insert(0,column_names)
+            results.insert(0, column_names)
         #based solutions from link, http://stackoverflow.com/questions/9989334/create-nice-column-output-in-python
         if results:
             col_width = max(len(str(word)) for row in results for word in row) + 2  # padding
@@ -266,17 +295,17 @@ class NCurses(object):
             for row in results:
                 if type(row) is tuple:
                     temp_string = "".join(str(word).ljust(col_width) for word in row)
-                    self.resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row))
+                    resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row))
                 else:
                     col_width = max(len(str(word)) for word in results) +2
                     temp_string = "".join(str(word).ljust(col_width) for word in results)
-                    self.resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results))
+                    resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results))
                 x += 1
-                self.resultsBox.refresh()
+                resultsBox.refresh()
                 self.stdscr.refresh()
         else:
-            self.resultsBox.addstr(1, 10, "This query contains no results")
-            self.resultsBox.refresh()
+            resultsBox.addstr(1, 10, "This query contains no results")
+            resultsBox.refresh()
             self.stdscr.refresh()
 
     def end_win(self):
