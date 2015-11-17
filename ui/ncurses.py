@@ -191,10 +191,11 @@ class NCurses(object):
                         selection_index = 1
                     self.print_sql_results(current_results, selection_index)
             elif b == 10:
-                self.print_row_details(current_results[selection_index])
+                self.print_row_details(current_results[selection_index-1])
             elif b == 27:
                 continue_loop = False
-                self.print_table_names()
+                self.print_sql_results(current_results, 1)
+                #self.print_table_names()
 
     def print_row_details(self, row):
         self.clear_screen()
