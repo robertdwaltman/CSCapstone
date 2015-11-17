@@ -165,28 +165,30 @@ class NCurses(object):
 
         self.db.get_table_results(table_name)
         current_results = self.db.get_next_results()
-        self.print_sql_results(current_results, 0)
+        self.print_sql_results(current_results, 1)
         continue_loop = True
-        selection_index = 0
+        selection_index = 1
         while continue_loop:
             b = self.stdscr.getch()
             if b == curses.KEY_LEFT:
                 current_results = self.db.get_prev_results()
-                self.print_sql_results(current_results, 0)
+                selection_index = 1
+                self.print_sql_results(current_results, selection_index)
             elif b == curses.KEY_RIGHT:
                 current_results = self.db.get_next_results()
-                self.print_sql_results(current_results, 0)
+                selection_index = 1
+                self.print_sql_results(current_results, selection_index)
             elif b == curses.KEY_UP:
                 if current_results:
                     selection_index -=1
-                    if selection_index < 0:
-                        selection_index = len(current_results) - 1
+                    if selection_index < 1:
+                        selection_index = len(current_results)
                     self.print_sql_results(current_results, selection_index)
             elif b == curses.KEY_DOWN:
                 if current_results:
-                    selection_index +=  1
-                    if selection_index > len(current_results) - 1:
-                        selection_index = 0
+                    selection_index += 1
+                    if selection_index > len(current_results):
+                        selection_index = 1
                     self.print_sql_results(current_results, selection_index)
 
             elif b == 27:
@@ -292,14 +294,20 @@ class NCurses(object):
         if results:
             col_width = max(len(str(word)) for row in results for word in row) + 2  # padding
             x = 1
-            for row in results:
+            for index, row in enumerate(results):
                 if type(row) is tuple:
                     temp_string = "".join(str(word).ljust(col_width) for word in row)
-                    resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row))
+                    if index == selection_index:
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row), curses.A_STANDOUT)
+                    else:
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row))
                 else:
                     col_width = max(len(str(word)) for word in results) +2
                     temp_string = "".join(str(word).ljust(col_width) for word in results)
-                    resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results))
+                    if index == selection_index:
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results), curses.A_STANDOUT)
+                    else:
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results))
                 x += 1
                 resultsBox.refresh()
                 self.stdscr.refresh()
