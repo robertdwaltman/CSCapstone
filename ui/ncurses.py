@@ -282,14 +282,14 @@ class NCurses(object):
         resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
         #resultsBox.border(0)
         if errors:
-            col_width = max(len(str(word)) for row in errors for word in row) + 2  # padding
+            col_width = 10  # padding
             x = 1
             for row in errors:
                 if type(row) is tuple:
                     temp_string = "".join(str(word).ljust(col_width) for word in row)
                     resultsBox.addstr(x, 10, "".join(str(word).ljust(col_width) for word in row))
                 else:
-                    col_width = max(len(str(word)) for word in errors) +2
+                    col_width = 10 +2
                     temp_string = "".join(str(word).ljust(col_width) for word in errors)
                     resultsBox.addstr(x, 10, "".join(str(word).ljust(col_width) for word in errors))
                 x += 1
@@ -307,7 +307,7 @@ class NCurses(object):
             results.insert(0, column_names)
         #based solutions from link, http://stackoverflow.com/questions/9989334/create-nice-column-output-in-python
         if results:
-            col_width = max(len(str(word)) for row in results for word in row) + 2  # padding
+            col_width = 11  # padding
             x = 1
             for index, row in enumerate(results):
                 if type(row) is tuple:
@@ -317,7 +317,7 @@ class NCurses(object):
                     else:
                         resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row))
                 else:
-                    col_width = max(len(str(word)) for word in results) +2
+                    col_width = 11
                     temp_string = "".join(str(word).ljust(col_width) for word in results)
                     if index == selection_index:
                         resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results), curses.A_STANDOUT)
