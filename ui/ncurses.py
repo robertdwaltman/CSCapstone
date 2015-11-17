@@ -190,10 +190,25 @@ class NCurses(object):
                     if selection_index > len(current_results):
                         selection_index = 1
                     self.print_sql_results(current_results, selection_index)
-
+            elif b == 10:
+                self.print_row_details(current_results[selection_index])
             elif b == 27:
                 continue_loop = False
                 self.print_table_names()
+
+    def print_row_details(self, row):
+        self.clear_screen()
+        curses.curs_set(0)
+        columns = self.db.get_returned_columns()
+        resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
+        resultsBox.border(0)
+        x = 1
+        for index,item in enumerate(row):
+            detail_str = "%s : %s" %(columns[index], item)
+            resultsBox.addstr(x, 2,detail_str)
+            x +=1
+        resultsBox.refresh()
+
 
     def drop_table_menu(self):
         self.clear_screen()
