@@ -313,16 +313,16 @@ class NCurses(object):
                 if type(row) is tuple:
                     temp_string = "".join(str(word).ljust(col_width) for word in row)
                     if index == selection_index:
-                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row), curses.A_STANDOUT)
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row[0:6]), curses.A_STANDOUT)
                     else:
-                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row))
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in row[0:6]))
                 else:
                     col_width = 11
                     temp_string = "".join(str(word).ljust(col_width) for word in results)
                     if index == selection_index:
-                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results), curses.A_STANDOUT)
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results[0:6]), curses.A_STANDOUT)
                     else:
-                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results))
+                        resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results[0:6]))
                 x += 1
                 resultsBox.refresh()
                 self.stdscr.refresh()
