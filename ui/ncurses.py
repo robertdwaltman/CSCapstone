@@ -240,6 +240,8 @@ class NCurses(object):
         x = 1
         for index, item in enumerate(row):
             detail_str = "%s : %s" %(columns[index], item)
+            position = resultsBox.getyx()
+            x=position[0] + 1
             resultsBox.addstr(x, 2,detail_str)
             x +=1
         resultsBox.refresh()
