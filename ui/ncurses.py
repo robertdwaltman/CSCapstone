@@ -150,12 +150,12 @@ class NCurses(object):
             elif b == curses.KEY_LEFT:
                 table_names = self.db.get_prev_table_names()
                 self.menu_cycle(table_names, 0)
-
+            elif b == 10:
+                self.print_table_contents(10, table_names[counter])
             elif b == 27:
                 continue_loop = False
                #curses.endwin()
                 self.print_main_menu()
-
 
     def print_table_names_old(self):
         self.clear_screen()
@@ -238,7 +238,7 @@ class NCurses(object):
         resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
         resultsBox.border(0)
         x = 1
-        for index,item in enumerate(row):
+        for index, item in enumerate(row):
             detail_str = "%s : %s" %(columns[index], item)
             resultsBox.addstr(x, 2,detail_str)
             x +=1
@@ -269,8 +269,8 @@ class NCurses(object):
             return
         status = self.db.run_query(inputString)
         if status:
-            results = self.db.get_next_results()
-            self.print_sql_results(results,0)
+            current_results = self.db.get_next_results()
+            self.print_sql_results(current_results, 1)
         else:
             errors = True
             error_list = []
@@ -283,25 +283,29 @@ class NCurses(object):
             if b == curses.KEY_RIGHT:
                 if not errors:
                     current_results = self.db.get_next_results()
-                    self.print_sql_results(current_results, 0)
+                    self.print_sql_results(current_results, 1)
             elif b == curses.KEY_LEFT:
                 if not errors:
                     current_results = self.db.get_prev_results()
-                    self.print_sql_results(current_results, 0)
+                    self.print_sql_results(current_results, 1)
             elif b == curses.KEY_UP:
                 if not errors:
                     if current_results:
                         selection_index -=1
                         if selection_index < 0:
-                            selection_index = len(current_results) - 1
+                            selection_index = len(current_results)
                         self.print_sql_results(current_results, selection_index)
             elif b == curses.KEY_DOWN:
                 if not errors:
                     if current_results:
                         selection_index +=1
-                        if selection_index > len(current_results) - 1:
-                            selection_index = 0
+                        if selection_index > len(current_results):
+                            selection_index = 1
                         self.print_sql_results(current_results, selection_index)
+            elif b == 10:
+                if not errors:
+                    if current_results:
+                        self.print_row_details(current_results[selection_index-1])
             elif b == 27:
                 self.get_user_query()
                 continue_loop = False
