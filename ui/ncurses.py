@@ -124,12 +124,45 @@ class NCurses(object):
 
     def print_table_names(self):
         self.clear_screen()
+        self.db.get_all_tables()
+        table_names = self.db.get_next_table_names()
+        continue_loop = True
+        selection_index = 0
+        counter = 0
+        self.menu_cycle(table_names, 0)
+        while continue_loop:
+            b = self.stdscr.getch()
+            if b == curses.KEY_DOWN:
+                if counter >= len(table_names)-1:
+                    counter = 0
+                else:
+                    counter += 1
+                self.menu_cycle(table_names, counter)
+            elif b == curses.KEY_UP:
+                if counter <= 0:
+                    counter = len(table_names) -1
+                else:
+                    counter -= 1
+                self.menu_cycle(table_names, counter)
+            elif b == curses.KEY_RIGHT:
+                table_names = self.db.get_next_table_names()
+                self.menu_cycle(table_names, 0)
+            elif b == curses.KEY_LEFT:
+                table_names = self.db.get_prev_table_names()
+                self.menu_cycle(table_names, 0)
+
+            elif b == 27:
+                continue_loop = False
+               #curses.endwin()
+                self.print_main_menu()
+
+
+    def print_table_names_old(self):
+        self.clear_screen()
         db_table_results = self.db.list_tables()
         table_names = []
         for item in db_table_results:
             table_names.append(item[0])
-
-
         continue_loop = True
         counter = 0
         self.menu_cycle(table_names, 0)
@@ -155,7 +188,8 @@ class NCurses(object):
                 self.print_main_menu()
             elif b == 27:
                 continue_loop = False
-                curses.endwin()
+               #curses.endwin()
+                self.print_main_menu()
 
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
@@ -194,8 +228,8 @@ class NCurses(object):
                 self.print_row_details(current_results[selection_index-1])
             elif b == 27:
                 continue_loop = False
-                self.print_sql_results(current_results, 1)
-                #self.print_table_names()
+                #self.print_sql_results(current_results, 1)
+                self.print_table_names()
 
     def print_row_details(self, row):
         self.clear_screen()
