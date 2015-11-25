@@ -30,8 +30,6 @@ class NCurses(object):
 
         # Print main menu
         self.print_intro()
-        #self.print_main_menu()
-        #self.stdscr.getch()
         curses.endwin()
 
     # This function clears the screen and rebuilds the border
@@ -44,8 +42,14 @@ class NCurses(object):
     # and highlights the first option in the list
     def menu_cycle(self, menu_listing, index):
         self.clear_screen()
+
+        # Get screen size and calculate the distance
+        # from the edge of the screen
         ypos = int(self.win_height)/2 - 5
-        xpos = int(self.win_width)/2  - 20
+        xpos = int(self.win_width)/2 - 20
+
+        # Iterate over the list of menu items.
+        # Highlight the selected index/item
         for i, item in enumerate(menu_listing):
             if i == index:
                 self.stdscr.addstr(ypos, xpos, item, curses.A_STANDOUT )
@@ -77,16 +81,14 @@ class NCurses(object):
                 continue_loop = False
                 curses.endwin()
 
-
-
     def print_main_menu(self):
         self.clear_screen()
         continue_loop = True
         counter = 0
         options = ["List Table Contents", "Submit SQL Query"]
-        self.groupIdBox = curses.newwin(20, 5, 1, 1)
-        self.groupIdBox.border(0)
-        self.groupIdBox.refresh()
+        groupIdBox = curses.newwin(20, 5, 1, 1)
+        groupIdBox.border(0)
+        groupIdBox.refresh()
         self.stdscr.refresh()
         # Print menu
         self.menu_cycle(options, 0)
@@ -120,15 +122,18 @@ class NCurses(object):
             # ESC ascii code is 27. Quit the loop if this is entered
             elif b == 27:
                 continue_loop = False
-            self.groupIdBox.refresh()
+            groupIdBox.refresh()
 
     def print_table_names(self):
         self.clear_screen()
+        # Get the table names form DB
         self.db.get_all_tables()
+        # Get the first set of names
         table_names = self.db.get_next_table_names()
         continue_loop = True
-        selection_index = 0
         counter = 0
+
+        # Print the menu and select the first table name
         self.menu_cycle(table_names, 0)
         while continue_loop:
             b = self.stdscr.getch()
@@ -154,7 +159,6 @@ class NCurses(object):
                 self.print_table_contents(10, table_names[counter])
             elif b == 27:
                 continue_loop = False
-               #curses.endwin()
                 self.print_main_menu()
 
     def print_table_names_old(self):
@@ -241,11 +245,10 @@ class NCurses(object):
         for index, item in enumerate(row):
             detail_str = "%s : %s" %(columns[index], item)
             position = resultsBox.getyx()
-            x=position[0] + 1
-            resultsBox.addstr(x, 2,detail_str)
-            x +=1
+            x = position[0] + 1
+            resultsBox.addstr(x, 2, detail_str)
+            x += 1
         resultsBox.refresh()
-
 
     def drop_table_menu(self):
         self.clear_screen()
@@ -276,7 +279,7 @@ class NCurses(object):
         else:
             errors = True
             error_list = []
-            error_list.append("          There was a problem with your query: "+ self.db.get_error())
+            error_list.append("          There was a problem with your query: " + self.db.get_error())
             self.print_error(error_list)
         # Wait for user input and then quit
         continue_loop = True
@@ -293,14 +296,14 @@ class NCurses(object):
             elif b == curses.KEY_UP:
                 if not errors:
                     if current_results:
-                        selection_index -=1
+                        selection_index -= 1
                         if selection_index < 0:
                             selection_index = len(current_results)
                         self.print_sql_results(current_results, selection_index)
             elif b == curses.KEY_DOWN:
                 if not errors:
                     if current_results:
-                        selection_index +=1
+                        selection_index += 1
                         if selection_index > len(current_results):
                             selection_index = 1
                         self.print_sql_results(current_results, selection_index)
@@ -311,7 +314,6 @@ class NCurses(object):
             elif b == 27:
                 self.get_user_query()
                 continue_loop = False
-        #curses.endwin()
 
     def query_db(self):
         pass
@@ -321,7 +323,6 @@ class NCurses(object):
         curses.curs_set(0)
 
         resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
-        #resultsBox.border(0)
         if errors:
             col_width = 10  # padding
             x = 1
