@@ -40,7 +40,7 @@ class NCurses(object):
 
     # This function builds the menu and spaces it out evenly
     # and highlights the first option in the list
-    def menu_cycle(self, menu_listing, index):
+    def menu_cycle1(self, menu_listing, index):
         self.clear_screen()
 
         # Get screen size and calculate the distance
@@ -56,6 +56,30 @@ class NCurses(object):
             else:
                 self.stdscr.addstr(ypos, xpos, item)
             ypos += 2
+        ypos += 5
+        xpos = xpos - 6
+        self.stdscr.addstr(ypos, xpos, "Press enter to select menu option or escape to quit.")
+        self.stdscr.refresh()
+		
+    def menu_cycle2(self, menu_listing, index):
+        self.clear_screen()
+
+	    # Get screen size and calculate the distance
+	    # from the edge of the screen
+        ypos = int(self.win_height)/2 - 5
+        xpos = int(self.win_width)/2 - 20
+
+	    # Iterate over the list of menu items.
+	    # Highlight the selected index/item
+        for i, item in enumerate(menu_listing):
+            if i == index:
+                self.stdscr.addstr(ypos, xpos, item, curses.A_STANDOUT )
+            else:
+                self.stdscr.addstr(ypos, xpos, item)
+            ypos += 2
+        ypos += 3
+        xpos -= 10
+        self.stdscr.addstr(ypos, xpos, "Press enter to select table or escape to go back to menu select.")
         self.stdscr.refresh()
 
     def print_intro(self):
@@ -91,7 +115,7 @@ class NCurses(object):
         groupIdBox.refresh()
         self.stdscr.refresh()
         # Print menu
-        self.menu_cycle(options, 0)
+        self.menu_cycle1(options, 0)
 
         # Listen for keyboard input. Quit when ESC key is hit
         while continue_loop:
@@ -103,14 +127,14 @@ class NCurses(object):
                     counter = 0
                 else:
                     counter += 1
-                self.menu_cycle(options, counter)
+                self.menu_cycle1(options, counter)
             # If up arrow is entered, highlight the previous option (or go to the end if at top)
             elif b == curses.KEY_UP:
                 if counter <= 0:
                     counter = len(options) - 1
                 else:
                     counter -= 1
-                self.menu_cycle(options, counter)
+                self.menu_cycle1(options, counter)
 
             # Right arrow key or enter goes to the next menu
             elif b == curses.KEY_RIGHT or b == 10:
@@ -134,7 +158,7 @@ class NCurses(object):
         counter = 0
 
         # Print the menu and select the first table name
-        self.menu_cycle(table_names, 0)
+        self.menu_cycle2(table_names, 0)
         while continue_loop:
             b = self.stdscr.getch()
             if b == curses.KEY_DOWN:
@@ -142,19 +166,19 @@ class NCurses(object):
                     counter = 0
                 else:
                     counter += 1
-                self.menu_cycle(table_names, counter)
+                self.menu_cycle2(table_names, counter)
             elif b == curses.KEY_UP:
                 if counter <= 0:
                     counter = len(table_names) -1
                 else:
                     counter -= 1
-                self.menu_cycle(table_names, counter)
+                self.menu_cycle2(table_names, counter)
             elif b == curses.KEY_RIGHT:
                 table_names = self.db.get_next_table_names()
                 self.menu_cycle(table_names, 0)
             elif b == curses.KEY_LEFT:
                 table_names = self.db.get_prev_table_names()
-                self.menu_cycle(table_names, 0)
+                self.menu_cycle2(table_names, 0)
             elif b == 10:
                 self.print_table_contents(10, table_names[counter])
             elif b == 27:
@@ -248,6 +272,8 @@ class NCurses(object):
             x = position[0] + 1
             resultsBox.addstr(x, 2, detail_str)
             x += 1
+        resultsBox.addstr(19, 15, "Press any arrow key to go back to table.")
+        resultsBox.addstr(20, 15, "Press escape to go back to table selection.")
         resultsBox.refresh()
 
     def drop_table_menu(self):
@@ -264,6 +290,7 @@ class NCurses(object):
         self.queryBox = curses.newwin(self.win_height/4, self.win_width-2,(self.win_height - self.win_height/4)-1,1 )
         self.queryBox.border(0)
 
+        self.stdscr.addstr(10, 25, "QUERY INSTRUCTIONS")
         self.queryBox.addstr(1, 5, "Enter your query below. Enter 'q' by itself to go back to the previous screen:")
         self.stdscr.refresh()
         inputString = self.queryBox.getstr(3, 25)
@@ -366,10 +393,15 @@ class NCurses(object):
                     else:
                         resultsBox.addstr(x, 2, "".join(str(word)[0:9].ljust(col_width) for word in results[0:6]))
                 x += 1
+                resultsBox.addstr(15, 8, "Press enter to select in-depth details on row.")
+                resultsBox.addstr(16, 8, "Use up and down arrow to navigate between rows in table.")
+                resultsBox.addstr(17, 8, "Use left and right arrow to navigate between pages in table.")
+                resultsBox.addstr(18, 8, "Press escape to go back to table selection.")
                 resultsBox.refresh()
                 self.stdscr.refresh()
         else:
             resultsBox.addstr(1, 10, "This query contains no results")
+            resultsBox.addstr(10, 25, "Press escape to go back")
             resultsBox.refresh()
             self.stdscr.refresh()
 
