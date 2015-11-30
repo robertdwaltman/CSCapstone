@@ -146,6 +146,9 @@ class NCurses(object):
             # ESC ascii code is 27. Quit the loop if this is entered
             elif b == 27:
                 continue_loop = False
+                #clears window then closes program, as it took multiple ESC presses to quit program
+                curses.endwin()
+                sys.exit(0)
             groupIdBox.refresh()
 
     def print_table_names(self):
