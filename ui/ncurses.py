@@ -231,6 +231,10 @@ class NCurses(object):
         continue_loop = True
         selection_index = 1
         while continue_loop:
+            #if empty table, return to previous page
+            if not current_results:
+                continue_loop = False
+                self.print_table_names()
             b = self.stdscr.getch()
             if b == curses.KEY_LEFT:
                 current_results = self.db.get_prev_results()
@@ -272,6 +276,8 @@ class NCurses(object):
             x = position[0] + 1
             resultsBox.addstr(x, 2, detail_str)
             x += 1
+        #currently, left arrow returns to table, one previous page, right arrow returns to table forward one page
+        #up arrow returns to same page but moves the highlighted row up one, and down arrow moves the highlighted row down one
         resultsBox.addstr(19, 15, "Press any arrow key to go back to table.")
         resultsBox.addstr(20, 15, "Press escape to go back to table selection.")
         resultsBox.refresh()
