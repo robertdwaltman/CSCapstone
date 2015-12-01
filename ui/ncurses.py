@@ -7,8 +7,18 @@ module_path = os.path.abspath(os.path.join(sys.path[0], os.pardir))
 sys.path.append(module_path)
 from pgdb.pgdb import PgHandler
 
+##################################
+# Description: Main curses class
+# Parameters:  None
+# Return values: None
+##################################
 class NCurses(object):
-    """docstring for NCurses"""
+
+    ##################################
+    # Description: Initialization function
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def __init__(self):
         # Create a curses object
         self.stdscr = curses.initscr()
@@ -32,12 +42,23 @@ class NCurses(object):
         self.print_intro()
         curses.endwin()
 
-    # This function clears the screen and rebuilds the border
+    ##################################
+    # Description: Clears the screen and rebuilds border
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def clear_screen(self):
         self.stdscr.clear()
         self.stdscr.border(0)
         self.stdscr.refresh()
 
+    ##################################
+    # Description: creates a menu that can be cycled through
+    # Parameters:  List of menu option strings, index of item to be
+    #              highlighted, boolean value of if the menu is for the
+    #              main menu
+    # Return values: None
+    ##################################
     def menu_cycle(self, menu_listing, index, main_menu=False):
         self.clear_screen()
 
@@ -54,6 +75,8 @@ class NCurses(object):
             else:
                 self.stdscr.addstr(ypos, xpos, item)
             ypos += 2
+
+        # Position instructions based on type of menu
         if main_menu:
             ypos += 5
             xpos -= 6
@@ -64,6 +87,12 @@ class NCurses(object):
             self.stdscr.addstr(ypos, xpos, "Press enter to select table or escape to go back to menu select.")
         self.stdscr.refresh()
 
+
+    ##################################
+    # Description: Prints intro splash screen
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def print_intro(self):
         self.clear_screen()
         height = self.win_height/2
@@ -87,6 +116,11 @@ class NCurses(object):
                 continue_loop = False
                 curses.endwin()
 
+    ##################################
+    # Description: Prints main menu
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def print_main_menu(self):
         self.clear_screen()
         continue_loop = True
@@ -134,6 +168,11 @@ class NCurses(object):
                 sys.exit(0)
             groupIdBox.refresh()
 
+    ##################################
+    # Description: Prints list of table names that exist in db
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def print_table_names(self):
         self.clear_screen()
         # Get the table names form DB
@@ -171,6 +210,11 @@ class NCurses(object):
                 continue_loop = False
                 self.print_main_menu()
 
+    ##################################
+    # Description: Prints all data in given table
+    # Parameters:  results to be listed per page, name of table
+    # Return values: None
+    ##################################
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
         #title_string = "%s" %(table_name)
@@ -217,6 +261,11 @@ class NCurses(object):
                 #self.print_sql_results(current_results, 1)
                 self.print_table_names()
 
+    ##################################
+    # Description: Prints all data from a given row
+    # Parameters:  List of row data
+    # Return values: None
+    ##################################
     def print_row_details(self, row):
         self.clear_screen()
         curses.curs_set(0)
@@ -236,10 +285,11 @@ class NCurses(object):
         resultsBox.addstr(20, 15, "Press escape to go back to table selection.")
         resultsBox.refresh()
 
-    def drop_table_menu(self):
-        self.clear_screen()
-        self.stdscr.addstr(10, 15, "Drop Tables names")
-
+    ##################################
+    # Description: Gets a query from the user
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def get_user_query(self):
         self.clear_screen()
         curses.echo()
@@ -303,9 +353,11 @@ class NCurses(object):
                 self.get_user_query()
                 continue_loop = False
 
-    def query_db(self):
-        pass
-
+    ##################################
+    # Description: Prints error from db
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def print_error(self, errors):
         self.clear_screen()
         curses.curs_set(0)
@@ -326,6 +378,11 @@ class NCurses(object):
                 resultsBox.refresh()
                 self.stdscr.refresh()
 
+    ##################################
+    # Description: Prints results returned from db
+    # Parameters:  List of results, index to item to be highlighted
+    # Return values: None
+    ##################################
     def print_sql_results(self, returned_results, selection_index):
         self.clear_screen()
         curses.curs_set(0)
@@ -366,7 +423,14 @@ class NCurses(object):
             resultsBox.refresh()
             self.stdscr.refresh()
 
+    ##################################
+    # Description: Closes UI
+    # Parameters:  None
+    # Return values: None
+    ##################################
     def end_win(self):
         curses.endwin()
+
 if __name__ == '__main__':
+    # For testing
     cur = NCurses()
