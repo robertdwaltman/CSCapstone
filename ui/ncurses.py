@@ -188,56 +188,24 @@ class NCurses(object):
                 continue_loop = False
                 self.print_main_menu()
 
-    def print_table_names_old(self):
-        self.clear_screen()
-        db_table_results = self.db.list_tables()
-        table_names = []
-        for item in db_table_results:
-            table_names.append(item[0])
-        continue_loop = True
-        counter = 0
-        self.menu_cycle(table_names, 0)
-        while continue_loop:
-            b = self.stdscr.getch()
-            if b == curses.KEY_DOWN:
-                if counter >= len(table_names)-1:
-                    counter = 0
-                else:
-                    counter += 1
-                self.menu_cycle(table_names, counter)
-            elif b == curses.KEY_UP:
-                if counter <= 0:
-                    counter = len(table_names) -1
-                else:
-                    counter -= 1
-                self.menu_cycle(table_names, counter)
-            elif b == curses.KEY_RIGHT or b == 10:
-                self.print_table_contents(10, table_names[counter])
-                continue_loop = False
-            elif b == curses.KEY_LEFT:
-                continue_loop = False
-                self.print_main_menu()
-            elif b == 27:
-                continue_loop = False
-               #curses.endwin()
-                self.print_main_menu()
-
     def print_table_contents(self, results_per_page, table_name):
         self.clear_screen()
-        title_string = "%s" %(table_name)
-        self.stdscr.addstr((2),(15), title_string, curses.A_BOLD | curses.A_UNDERLINE)
-        self.stdscr.refresh()
+        #title_string = "%s" %(table_name)
+        #self.stdscr.addstr(2, 15, title_string, curses.A_BOLD | curses.A_UNDERLINE)
+        #self.stdscr.refresh()
 
         self.db.get_table_results(table_name)
         current_results = self.db.get_next_results()
-        self.print_sql_results(current_results, 1)
+
         continue_loop = True
         selection_index = 1
+        if not current_results:
+            self.stdscr.addstr(1, 2, "This table is empty! Press any key to return to the previous menu.")
+            self.stdscr.getch()
+            self.print_table_names()
+            continue_loop = False
+        self.print_sql_results(current_results, 1)
         while continue_loop:
-            #if empty table, return to previous page
-            if not current_results:
-                continue_loop = False
-                self.print_table_names()
             b = self.stdscr.getch()
             if b == curses.KEY_LEFT:
                 current_results = self.db.get_prev_results()
