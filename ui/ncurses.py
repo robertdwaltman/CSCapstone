@@ -271,7 +271,7 @@ class NCurses(object):
         curses.curs_set(0)
         columns = self.db.get_returned_columns()
         resultsBox = curses.newwin(self.win_height-2, self.win_width-2, 1, 1)
-        resultsBox.border(0)
+        #resultsBox.border(0)
         x = 1
         for index, item in enumerate(row):
             detail_str = "%s : %s" %(columns[index], item)
