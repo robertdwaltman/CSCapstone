@@ -299,8 +299,9 @@ class NCurses(object):
         self.queryBox = curses.newwin(self.win_height/4, self.win_width-2,(self.win_height - self.win_height/4)-1,1 )
         self.queryBox.border(0)
 
-        self.stdscr.addstr(10, 25, "QUERY INSTRUCTIONS")
-        self.queryBox.addstr(1, 5, "Enter your query below. Enter 'q' by itself to go back to the previous screen:")
+        self.stdscr.addstr(10, 15, "Enter your query below.")
+        self.stdscr.addstr(11, 15, "Enter 'q' by itself to go back to the previous screen.")
+        #self.queryBox.addstr(1, 5, "Enter your query below. Enter 'q' by itself to go back to the previous screen:")
         self.stdscr.refresh()
         inputString = self.queryBox.getstr(3, 25)
         if inputString == 'q':
