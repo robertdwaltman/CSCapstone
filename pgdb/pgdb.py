@@ -16,17 +16,27 @@ class PgHandler(object):
     # Parameters:  None
     # Return values: None
     ##################################
-    def __init__(self):
+    def __init__(self, dev=False):
 
         try:
             print "Connecting to database..."
-            self.conn = psycopg2.connect(
-                database=dbinfo.DB_NAME	,
-                user=dbinfo.DB_USER,
-                password=dbinfo.DB_PASSWORD,
-                host=dbinfo.DB_HOST,
-                port=dbinfo.DB_PORT
-                )
+            if dev:
+                self.conn = psycopg2.connect(
+                    database=dbinfo.DB_NAME_DEV	,
+                    user=dbinfo.DB_USER_DEV,
+                    password=dbinfo.DB_PASSWORD_DEV,
+                    host=dbinfo.DB_HOST_DEV,
+                    port=dbinfo.DB_PORT_DEV
+                    )
+            else:
+                self.conn = psycopg2.connect(
+                    database=dbinfo.DB_NAME	,
+                    user=dbinfo.DB_USER,
+                    password=dbinfo.DB_PASSWORD,
+                    host=dbinfo.DB_HOST,
+                    port=dbinfo.DB_PORT
+                    )
+
         except:
             print "Could not connect to database"
             sys.exit()

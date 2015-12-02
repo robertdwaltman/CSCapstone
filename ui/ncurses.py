@@ -19,7 +19,7 @@ class NCurses(object):
     # Parameters:  None
     # Return values: None
     ##################################
-    def __init__(self):
+    def __init__(self, dev=False):
         # Create a curses object
         self.stdscr = curses.initscr()
         self.stdscr.border(0)
@@ -36,7 +36,7 @@ class NCurses(object):
         self.win_height, self.win_width = self.stdscr.getmaxyx()
 
         # DB handler
-        self.db = PgHandler()
+        self.db = PgHandler(dev=dev)
 
         # Print main menu
         self.print_intro()
@@ -433,4 +433,8 @@ class NCurses(object):
 
 if __name__ == '__main__':
     # For testing
-    cur = NCurses()
+    import argparse
+    parser = argparse.ArgumentParser(description='Run as development or production.')
+    parser.add_argument('-d', '--dev',action='store_true', help='run using development DB')
+    args = parser.parse_args()
+    cur = NCurses(dev=args.dev)
