@@ -17,11 +17,11 @@ DB_PASSWORD_DEV  = "TVTPljx8AHErUDNclTE-y50Spq"
 # Host
 DB_HOST = "localhost"
 # Database
-DB_NAME = "d4hifqt2p2fsi8"
+DB_NAME = "capstone"
 # User
-DB_USER = "glqcdsttbtefci"
+DB_USER = "osuser"
 # Port
 DB_PORT =  "5432"
 # Password
-DB_PASSWORD  = "TVTPljx8AHErUDNclTE-y50Spq"
+DB_PASSWORD  = "cs419"
 
