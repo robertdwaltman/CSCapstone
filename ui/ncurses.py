@@ -182,34 +182,38 @@ class NCurses(object):
         continue_loop = True
         counter = 0
 
-        # Print the menu and select the first table name
-        self.menu_cycle(table_names, 0)
-        while continue_loop:
+        if table_names:
+            # Print the menu and select the first table name
+            self.menu_cycle(table_names, 0)
+            while continue_loop:
+                b = self.stdscr.getch()
+                if b == curses.KEY_DOWN:
+                    if counter >= len(table_names)-1:
+                        counter = 0
+                    else:
+                        counter += 1
+                    self.menu_cycle(table_names, counter)
+                elif b == curses.KEY_UP:
+                    if counter <= 0:
+                        counter = len(table_names) -1
+                    else:
+                        counter -= 1
+                    self.menu_cycle(table_names, counter)
+                elif b == curses.KEY_RIGHT:
+                    table_names = self.db.get_next_table_names()
+                    self.menu_cycle(table_names, 0)
+                elif b == curses.KEY_LEFT:
+                    table_names = self.db.get_prev_table_names()
+                    self.menu_cycle(table_names, 0)
+                elif b == 10:
+                    self.print_table_contents(10, table_names[counter])
+                elif b == 27:
+                    continue_loop = False
+                    self.print_main_menu()
+        else:
+            self.stdscr.addstr(8, 4, "There are no tables. Please hit any key to return to the previous menu.")
             b = self.stdscr.getch()
-            if b == curses.KEY_DOWN:
-                if counter >= len(table_names)-1:
-                    counter = 0
-                else:
-                    counter += 1
-                self.menu_cycle(table_names, counter)
-            elif b == curses.KEY_UP:
-                if counter <= 0:
-                    counter = len(table_names) -1
-                else:
-                    counter -= 1
-                self.menu_cycle(table_names, counter)
-            elif b == curses.KEY_RIGHT:
-                table_names = self.db.get_next_table_names()
-                self.menu_cycle(table_names, 0)
-            elif b == curses.KEY_LEFT:
-                table_names = self.db.get_prev_table_names()
-                self.menu_cycle(table_names, 0)
-            elif b == 10:
-                self.print_table_contents(10, table_names[counter])
-            elif b == 27:
-                continue_loop = False
-                self.print_main_menu()
-
+            self.print_main_menu()
     ##################################
     # Description: Prints all data in given table
     # Parameters:  results to be listed per page, name of table
